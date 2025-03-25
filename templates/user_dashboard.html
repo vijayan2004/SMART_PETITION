@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Smart Petitions</title>
+
+    <!-- Font Awesome for Modern Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <!-- Title Bar -->
+    <div class="title-bar">
+        <h1><i class="fas fa-scroll"></i> Smart Petitions - User Dashboard</h1>
+        <div class="user-location">
+            <i class="fas fa-map-marker-alt"></i> {{ current_user.name }} | {{ current_user.city }}
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+        <ul>
+            <li><a href="{{ url_for('user_dashboard') }}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{{ url_for('create_petition') }}"><i class="fas fa-file-alt"></i> Create Petition</a></li>
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h2><i class="fas fa-file-signature"></i> Your Petitions</h2>
+        </div>
+
+       <!-- Petition Statistics -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3><i class="fas fa-file-alt"></i> Total Petitions</h3>
+                    <p><strong>{{ total_petitions or 0 }}</strong></p>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-hourglass-half"></i> Pending</h3>
+                    <p><strong>{{ pending_count or 0 }}</strong></p>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-check-circle"></i> Resolved</h3>
+                    <p><strong>{{ resolved_count or 0 }}</strong></p>
+                </div>
+            </div>
+
+
+        <!-- Petition Table -->
+        <table class="petition-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-thumbtack"></i> Title</th>
+                    <th><i class="fas fa-calendar-alt"></i> Date Submitted</th>
+                    <th><i class="fas fa-tags"></i> Category</th>
+                    <th><i class="fas fa-map-marker-alt"></i> Location</th>
+                    <th><i class="fas fa-info-circle"></i> Status</th>
+                    <th><i class="fas fa-cogs"></i> Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for petition in petitions %}
+                <tr>
+                    <td>{{ petition.title }}</td>
+                    <td>{{ petition.date_created.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ petition.category }}</td>
+                    <td>{{ petition.city }}</td>
+                    <td>
+                        <span class="status 
+                            {% if petition.status == 'Pending' %} pending 
+                            {% elif petition.status == 'Reviewed' %} reviewed 
+                            {% elif petition.status == 'Resolved' %} resolved 
+                            {% endif %}">
+                            {{ petition.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('view_petition', petition_id=petition.id) }}" class="btn btn-info">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <form method="POST" action="{{ url_for('delete_petition', petition_id=petition.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger delete-btn" onclick="return confirm('Are you sure you want to delete this petition?');">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById("darkModeToggle").addEventListener("click", function() {
+            document.body.classList.toggle("dark-mode");
+        });
+    </script>
+
+</body>
+</html>
+<style>
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #f4f4f4;
+    color: #333;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Title Bar */
+.title-bar {
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to right, #007bff, #0056b3);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: rgba(0, 86, 179, 0.9);
+    color: white;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 60px;
+}
+
+.sidebar ul {
+    list-style: none;
+    margin-top: 20px;
+}
+
+.sidebar ul li {
+    padding: 12px;
+    transition: 0.3s;
+}
+
+.sidebar ul li:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+#darkModeToggle {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    background: none;
+    border: 1px solid white;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#darkModeToggle:hover {
+    background: white;
+    color: #0056b3;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 270px;
+    padding: 20px;
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    flex: 1;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* Table */
+.petition-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.petition-table th, .petition-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.petition-table th {
+    background: #007bff;
+    color: white;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    max-width: 150px; /* Adjust the width as needed */
+    display: inline-block;
+    text-align: center;
+}
+
+
+.btn-info { background: #17a2b8; color: white; }
+.btn-danger { background: #dc3545; color: white; }
+</style>

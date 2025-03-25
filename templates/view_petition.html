@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petition Details | Smart Petitions</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f4f4f4;
+            color: #333;
+            padding: 20px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        h2 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .petition-details p {
+            font-size: 17px;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .status {
+            font-weight: bold;
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 5px;
+            text-transform: uppercase;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .pending { background: rgba(255, 165, 0, 0.2); color: orange; }
+        .reviewed { background: rgba(0, 123, 255, 0.2); color: blue; }
+        .resolved { background: rgba(40, 167, 69, 0.2); color: green; }
+
+        .status-animated {
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 1; }
+            to { opacity: 0.6; }
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: #0056b3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #003b80;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>📜 Petition Details</h2>
+        <div class="petition-details">
+            <p><strong>Title:</strong> {{ petition.title }}</p>
+            <p><strong>Description:</strong> {{ petition.description }}</p>
+            <p><strong>Submitted By:</strong> {{ petition.user.username }}</p>
+            <p><p><strong>Submitted To:</strong> 
+                {% if petition.assigned_to %}
+                    {{ petition.assigned_admin.username if petition.assigned_admin else "Not Assigned" }}
+                {% else %}
+                    Not Assigned
+                {% endif %}
+            </p>
+            
+            <p><strong>Submission Date:</strong> {{ petition.date_created.strftime('%Y-%m-%d') }}</p>
+            <p>
+                <strong>Status:</strong> 
+                <span class="status {% if petition.status == 'Pending' %}pending{% elif petition.status == 'Reviewed' %}reviewed{% else %}resolved{% endif %} status-animated">
+                    {{ petition.status }}
+                </span>
+            </p>
+       
+
+</body>
+</html>

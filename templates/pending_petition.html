@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Petitions| Smart Petitions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand animate__animated animate__fadeInLeft" href="#">Pending Petitions</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link animate__animated animate__fadeInRight" href="{{ url_for('admin_dashboard') }}">🏠 Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white animate__animated animate__fadeInRight" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="text-center animate__animated animate__fadeInDown">Pending Petitions  {{ location }}</h2>
+
+        {% if petitions %}
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>User</th>
+                        <th>Category</th>
+                        <th>Priority</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for petition in petitions %}
+                    <tr>
+                        <td>{{ petition.id }}</td>
+                        <td>{{ petition.title }}</td>
+                        <td>{{ petition.user.username }}</td>
+                        <td>{{ petition.category if petition.category else 'Uncategorized' }}</td>
+
+                        <td>
+                            {% if petition.priority == 'High' %}
+                                <span class="badge bg-danger">High</span>
+                            {% elif petition.priority == 'Medium' %}
+                                <span class="badge bg-warning">Medium</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Low</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('view_petition', petition_id=petition.id) }}" class="btn btn-sm btn-primary">View</a>
+                
+                            <a href="{{ url_for('approve_petition', petition_id=petition.id) }}" class="btn btn-sm btn-success">Resolved</a>
+                            <form action="{{ url_for('reject_petition', petition_id=petition.id) }}" method="POST" style="display:inline;">
+    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+</form>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-warning text-center mt-4 animate__animated animate__fadeIn">
+            No pending petitions found in {{ location }}.
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

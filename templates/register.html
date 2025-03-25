@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    /* Global Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+    /* Animated Background */
+    body { background: linear-gradient(-45deg, #1a2a6c, #b21f1f, #fdbb2d);
+           background-size: 400% 400%; animation: gradientMove 8s ease infinite;
+           display: flex; justify-content: center; align-items: center; height: 100vh; }
+    
+    @keyframes gradientMove { 
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Glassmorphism Container */
+    .auth-container { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(12px);
+                      padding: 30px; border-radius: 15px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+                      width: 400px; text-align: center; color: white; transition: 0.3s ease-in-out;
+                      border: 1px solid rgba(255, 255, 255, 0.3); }
+    .auth-container:hover { transform: scale(1.03); }
+
+    /* Heading */
+    h2 { font-size: 30px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Input Fields */
+    .input-group { position: relative; margin: 20px 0; }
+    .input-group input, .input-group select { width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.2);
+                                              border: none; border-radius: 8px; color: white;
+                                              font-size: 16px; outline: none; transition: 0.3s; appearance: none; }
+    .input-group label { position: absolute; top: 50%; left: 12px; color: white; font-size: 16px;
+                         pointer-events: none; transition: 0.3s; transform: translateY(-50%); opacity: 0.7; }
+    .input-group input:focus, .input-group select:focus { background: rgba(255, 255, 255, 0.3);
+                                                          box-shadow: 0 0 10px #ffeb3b; }
+    .input-group input:focus + label, .input-group input:valid + label,
+    .input-group select:focus + label, .input-group select:valid + label { top: 10px; font-size: 12px; color: #ffeb3b; opacity: 1; }
+
+    /* Custom Dropdown Styling */
+    .select-container { position: relative; }
+    select { width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 8px;
+             color: white; font-size: 16px; outline: none; appearance: none; cursor: pointer; }
+    select:hover { background: rgba(255, 255, 255, 0.3); }
+    .select-container::after { content: '▼'; position: absolute; top: 50%; right: 12px; transform: translateY(-50%);
+                               color: white; pointer-events: none; transition: 0.3s; }
+    select:focus + .select-container::after { color: #ffeb3b; }
+
+    /* Button */
+    .btn { width: 100%; padding: 12px; background: #ff4081; color: white; border: none; border-radius: 8px;
+           cursor: pointer; font-size: 18px; transition: 0.3s; text-transform: uppercase; font-weight: bold; }
+    .btn:hover { background: #e91e63; transform: scale(1.05); box-shadow: 0px 4px 15px rgba(233, 30, 99, 0.4); }
+
+    /* Link */
+    .login-link { margin-top: 15px; font-size: 14px; color: white; }
+    .login-link a { color: #ffeb3b; text-decoration: none; font-weight: bold; transition: 0.3s; }
+    .login-link a:hover { text-decoration: underline; }
+
+    /* Dark Mode */
+    body.dark-mode { background: #121212; }
+    .dark-mode .auth-container { background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.2); }
+    .dark-mode input, .dark-mode select { background: rgba(40, 40, 40, 0.6); }
+    .dark-mode label { color: #f8e71c; }
+    .dark-mode .btn { background: #f8e71c; color: black; }
+    .dark-mode .btn:hover { background: #ffeb3b; }
+
+    /* Dark Mode Toggle */
+    #dark-mode-toggle { position: fixed; top: 10px; right: 10px; background: none; border: none;
+                        font-size: 26px; cursor: pointer; color: white; transition: 0.3s; }
+    #dark-mode-toggle:hover { transform: scale(1.1); }
+</style>
+
+<!-- Registration Form -->
+<div class="auth-container">
+    <h2>Register</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p class="error-message">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div class="input-group">
+            <input type="text" name="username" id="username" required>
+            <label for="username">Username</label>
+        </div>
+        
+        <div class="input-group">
+            <input type="password" name="password" id="password" required>
+            <label for="password">Password</label>
+        </div>
+
+        <div class="input-group select-container">
+            <select name="role" id="role" required>
+                <option value="" disabled selected>Select Role</option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            
+        </div>
+        
+        <div class="input-group">
+            <input type="text" name="city" id="city" required>
+            <label for="city">City</label>
+        </div>
+
+        <button type="submit" class="btn">Register</button>
+    </form>
+
+    <p class="login-link">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+</div>
+
+<!-- Dark Mode Toggle -->
+<button id="dark-mode-toggle">🌙</button>
+
+<script>
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('dark-mode') === 'enabled') {
+        body.classList.add('dark-mode');
+        darkModeToggle.innerHTML = "☀️";
+    }
+
+    darkModeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('dark-mode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+        darkModeToggle.innerHTML = body.classList.contains('dark-mode') ? "☀️" : "🌙";
+    });
+</script>
+
+{% endblock %}

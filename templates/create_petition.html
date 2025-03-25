@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Petition</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            transition: background 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .dark-mode {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        .dark-mode .card {
+            background-color: #212529;
+            box-shadow: none;
+        }
+        .dark-mode .form-control {
+            background-color: #495057;
+            color: #f8f9fa;
+            border: 1px solid #6c757d;
+        }
+        .dark-mode .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+        }
+        .dark-mode-toggle {
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card p-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>📜 Submit a New Petition</h2>
+            <span class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</span>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show mt-2" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('create_petition') }}" class="mt-3">
+            {{ form.hidden_tag() }}  <!-- CSRF Protection -->
+
+            <!-- Title -->
+            <div class="mb-3">
+                <label class="form-label">Petition Title</label>
+                {{ form.title(class="form-control", placeholder="Enter petition title") }}
+                {% if form.title.errors %}
+                    <div class="text-danger">{{ form.title.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Category (Dropdown) -->
+           
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                {{ form.description(class="form-control", rows="4", id="description") }}
+                <small class="text-muted">
+                    <span id="charCount">0</span>/500 characters
+                </small>
+                {% if form.description.errors %}
+                    <div class="text-danger">{{ form.description.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+           
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100">🚀 Submit Petition</button>
+
+            <!-- Back Button (Fixed Dashboard Link) -->
+            {% if current_user.role == 'officer' %}
+                <a href="{{ url_for('officer_dashboard') }}" class="btn btn-secondary w-100 mt-2">🔙 Back to Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary w-100 mt-2">🔙 Back to Dashboard</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Live Character Counter -->
+<script>
+    document.getElementById("description").addEventListener("input", function () {
+        let count = this.value.length;
+        document.getElementById("charCount").innerText = count;
+    });
+
+    // Dark Mode Toggle
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+    }
+
+    // Load Dark Mode Preference
+    window.onload = function () {
+        if (localStorage.getItem("darkMode") === "enabled") {
+            document.body.classList.add("dark-mode");
+        }
+    };
+</script>
+
+</body>
+</html>

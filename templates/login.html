@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART PETITIONS: AI-Tool for Petition Tracking and Management</title>
+    <style>
+        /* Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+
+        /* Background Animation */
+        body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; 
+               overflow: hidden; background: #121212; text-align: center; color: white; }
+
+        .background { position: fixed; width: 100%; height: 100vh; overflow: hidden; z-index: -1; }
+        .wave { position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #007bff 0%, #6a11cb 100%);
+                clip-path: polygon(0% 50%, 100% 100%, 100% 100%, 0% 100%); animation: waveAnim 5s infinite linear alternate; }
+        .wave1 { opacity: 0.4; }
+        .wave2 { opacity: 0.6; animation-delay: 2s; }
+        .wave3 { opacity: 0.8; animation-delay: 4s; }
+        @keyframes waveAnim { from { transform: translateY(-20px); } to { transform: translateY(20px); } }
+
+        /* Title Section */
+        .title-container { margin-bottom: 20px; }
+        .title-container h1 { font-size: 28px; color: #ffeb3b; text-transform: uppercase; }
+        .title-container h2 { font-size: 18px; color: #ddd; margin-top: 5px; }
+
+        /* Glassmorphic Login Box */
+        .login-box { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 30px; border-radius: 12px;
+                     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); width: 350px; text-align: center; }
+
+        /* Input Fields */
+        .input-group { position: relative; margin: 20px 0; }
+        .input-group input { width: 100%; padding: 10px; background: transparent; border: none; border-bottom: 2px solid white;
+                             color: white; font-size: 16px; transition: 0.3s; }
+        .input-group label { position: absolute; top: 50%; left: 10px; color: white; font-size: 16px; pointer-events: none;
+                             transition: 0.3s; transform: translateY(-50%); }
+        .input-group input:focus + label, .input-group input:valid + label { top: 0; font-size: 12px; color: #f8e71c; }
+
+        /* Password Toggle */
+        .toggle-password { position: absolute; right: 10px; top: 50%; cursor: pointer; color: white; transform: translateY(-50%); }
+
+        /* Button */
+        .btn { width: 100%; padding: 12px; background: #ff4081; color: white; border: none; border-radius: 8px;
+               cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn:hover { background: #e91e63; transform: scale(1.05); }
+
+        /* Register Link */
+        .register-link { margin-top: 15px; font-size: 14px; color: white; }
+        .register-link a { color: #ffeb3b; text-decoration: none; }
+
+        /* Error Messages */
+        .error-message { color: #ffeb3b; font-size: 14px; margin: 10px 0; }
+
+        /* Dark Mode */
+        body.dark-mode { background: #121212; }
+        .dark-mode .login-box { background: rgba(20, 20, 20, 0.8); }
+        .dark-mode input { border-bottom: 2px solid #f8e71c; }
+        .dark-mode label { color: #f8e71c; }
+        .dark-mode .btn { background: #f8e71c; color: black; }
+        .dark-mode .btn:hover { background: #ffeb3b; }
+
+        /* Dark Mode Toggle */
+        #dark-mode-toggle { position: fixed; top: 10px; right: 10px; background: none; border: none;
+                            font-size: 24px; cursor: pointer; color: white; }
+    </style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="background">
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
+</div>
+
+<!-- Title Section -->
+<div class="title-container">
+    <h1>SMART PETITIONS</h1>
+    <h2>AI-Tool for Petition Tracking and Management</h2>
+</div>
+
+<!-- Login Form -->
+<div class="container">
+    <div class="login-box">
+        <p class="subtitle">Sign in to continue</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for message in messages %}
+                <p class="error-message">{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="input-group">
+                <input type="text" id="username" name="username" required>
+                <label for="username">Username</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" name="password" required>
+                <label for="password">Password</label>
+                <span class="toggle-password" onclick="togglePassword()">👁</span>
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <p class="register-link">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+    </div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<button id="dark-mode-toggle">🌙</button>
+
+<script>
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    // Load dark mode preference
+    if (localStorage.getItem('dark-mode') === 'enabled') {
+        body.classList.add('dark-mode');
+        darkModeToggle.innerHTML = "☀️";
+    }
+
+    // Toggle dark mode
+    darkModeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('dark-mode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+        darkModeToggle.innerHTML = body.classList.contains('dark-mode') ? "☀️" : "🌙";
+    });
+
+    // Password Toggle
+    function togglePassword() {
+        let passwordInput = document.getElementById("password");
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+    }
+</script>
+
+</body>
+</html>

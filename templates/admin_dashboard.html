@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Smart Petitions</title>
+    
+    <!-- Bootstrap & Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Dark Mode Theme */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100%;
+            background: #1c1c1c;
+            padding-top: 20px;
+            color: #fff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+            animation: fadeInLeft 0.5s ease;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 15px 0;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            font-size: 18px;
+            color: #fff;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .sidebar ul li a:hover {
+            background: #575757;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        /* Admin Header */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .admin-header h1 {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .admin-header .admin-location {
+            background: #1e1e1e;
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            font-weight: bold;
+            color: #00bcd4;
+        }
+
+        /* Cards */
+        .card {
+            background-color: #1e1e1e;
+            color: #fff;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            transition: 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .card .card-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .card p {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        /* Buttons */
+        .btn-custom {
+            padding: 10px 18px;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-custom:hover {
+            opacity: 0.8;
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar animate__animated animate__fadeInLeft">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content animate__animated animate__fadeInUp">
+        
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <h1>Welcome, {{ admin.username if admin else 'Admin' }}</h1>
+
+            <div class="admin-location">
+                🏛️ {{ admin_city if admin_city else 'Unknown Location' }}
+
+            </div>
+        </div>
+
+        <!-- Cards Section -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card animate__animated animate__bounceIn">
+                    <div class="card-body">
+                        <h5 class="card-title">Pending Petitions</h5>
+                        <p>Review petitions submitted by users.</p>
+                        <a href="{{ url_for('admin_pending_petitions') }}" class="btn btn-info btn-custom">View</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card animate__animated animate__bounceIn">
+                    <div class="card-body">
+                        <h5 class="card-title">System Reports</h5>
+                        <p>View analytics & petition trends.</p>
+                        <a href="{{ url_for('admin_reports') }}" class="btn btn-danger btn-custom">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

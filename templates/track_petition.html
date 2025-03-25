@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Petitions | Smart Petitions</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: #0056b3;
+            color: white;
+        }
+        .navbar .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        /* Table Styles */
+        .petition-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .petition-table th, .petition-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        .status {
+            font-weight: bold;
+        }
+        .pending { color: orange; }
+        .reviewed { color: blue; }
+        .resolved { color: green; }
+        /* Buttons */
+        .btn {
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">Smart Petitions</div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container">
+        <h2>Track Your Petitions</h2>
+        <p>Here are the petitions you have submitted:</p>
+
+        <table class="petition-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Submitted On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for petition in petitions %}
+                <tr>
+                    <td>{{ petition.title }}</td>
+                    <td>
+                        {% if petition.status == 'Pending' %}
+                            <span class="status pending">🟡 Pending</span>
+                        {% elif petition.status == 'Reviewed' %}
+                            <span class="status reviewed">🔵 Reviewed</span>
+                        {% else %}
+                            <span class="status resolved">✅ Resolved</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ petition.date_created.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('petition_detail', petition_id=petition.id) }}" class="btn btn-info btn-sm">🔍 View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">🔙 Back to Dashboard</a>
+    </div>
+
+</body>
+</html>

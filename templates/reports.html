@@ -1,0 +1,232 @@
+{% extends "index.html" %}
+
+{% block title %}Petition Reports - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-primary">📜 Petition Reports</h2>
+
+    <!-- Filter & Search Section -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <input type="text" id="searchInput" class="form-control search-input" placeholder="🔍 Search by title or category">
+        </div>
+        <div class="col-md-4">
+            <select id="statusFilter" class="form-control filter-select">
+                <option value="">📌 Filter by Status</option>
+                <option value="Pending">⏳ Pending</option>
+                <option value="In Progress">⚙️ In Progress</option>
+                <option value="Resolved">✅ Resolved</option>
+            </select>
+        </div>
+        <div class="container mt-4">
+            <h2>📊 Analytics & Reports</h2>
+            <p>Generate and download analytics reports for all petitions.</p>
+        
+            <div class="text-end mt-3">
+                <a href="{{ url_for('download_petitions_csv') }}" class="btn btn-success">📄 Download CSV</a>
+                <a href="{{ url_for('download_petitions_pdf') }}" class="btn btn-danger">📜 Download PDF</a>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Petitions Table -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover text-center align-middle petition-table" id="petitionTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th onclick="sortTable(1)" class="sortable">Title ⬍</th>
+                    <th onclick="sortTable(2)" class="sortable">Category ⬍</th>
+                    <th onclick="sortTable(3)" class="sortable">Status ⬍</th>
+                    <th onclick="sortTable(4)" class="sortable">Submitted By ⬍</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for petition in petitions %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ petition.title }}</td>
+                    <td>{{ petition.category }}</td>
+                    <td>
+                        <span class="status-badge 
+                            {% if petition.status == 'Pending' %} bg-pending
+                            {% elif petition.status == 'In Progress' %} bg-in-progress
+                            {% elif petition.status == 'Resolved' %} bg-resolved{% endif %}">
+                            {{ petition.status }}
+                        </span>
+                    </td>
+                    
+                    <td>{{ petition.user.username }}</td>
+                    <td>{{ petition.date_created.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('view_petition', petition_id=petition.id) }}" class="btn btn-sm btn-outline-primary shadow-sm">View</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">⚠️ No petitions found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript for Search, Sorting & Export -->
+<script>
+    // Search Functionality
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#petitionTable tbody tr");
+        rows.forEach(row => {
+            let title = row.cells[1].innerText.toLowerCase();
+            let category = row.cells[2].innerText.toLowerCase();
+            row.style.display = (title.includes(filter) || category.includes(filter)) ? "" : "none";
+        });
+    });
+
+    // Filter by Status
+    document.getElementById("statusFilter").addEventListener("change", function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#petitionTable tbody tr");
+        rows.forEach(row => {
+            let status = row.cells[3].innerText.toLowerCase();
+            row.style.display = (filter === "" || status.includes(filter)) ? "" : "none";
+        });
+    });
+
+    // Sorting Functionality
+    function sortTable(columnIndex) {
+        let table = document.getElementById("petitionTable");
+        let rows = Array.from(table.rows).slice(1);
+        let sortedRows = rows.sort((a, b) => a.cells[columnIndex].innerText.localeCompare(b.cells[columnIndex].innerText));
+        table.tBodies[0].append(...sortedRows);
+    }
+
+    // Download as CSV
+    function downloadCSV() {
+        let table = document.getElementById("petitionTable");
+        let rows = table.rows;
+        let csvContent = "data:text/csv;charset=utf-8,";
+        for (let i = 0; i < rows.length; i++) {
+            let row = Array.from(rows[i].cells).map(cell => cell.innerText).join(",");
+            csvContent += row + "\n";
+        }
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "petitions_report.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+
+    // Download as PDF
+    function downloadPDF() {
+        let doc = new jsPDF();
+        doc.text("Petition Reports", 10, 10);
+        let table = document.getElementById("petitionTable");
+        let rows = table.rows;
+        let data = [];
+        for (let i = 0; i < rows.length; i++) {
+            data.push(Array.from(rows[i].cells).map(cell => cell.innerText));
+        }
+        doc.autoTable({ head: [data[0]], body: data.slice(1) });
+        doc.save("petitions_report.pdf");
+    }
+</script>
+
+<!-- Include jsPDF & AutoTable for PDF Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<!-- Improved CSS -->
+<style>
+    /* General Styles */
+    .search-input, .filter-select {
+        border-radius: 20px;
+        padding: 10px;
+    }
+
+    .export-btn {
+        font-size: 14px;
+        padding: 8px 15px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .export-btn:hover {
+        transform: scale(1.05);
+    }
+
+    /* Table Styles */
+    .petition-table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .petition-table thead {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .petition-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+  /* Improved Status Badge */
+.status-badge {
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 20px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Fix: Ensure All Statuses Have the Correct Color */
+.bg-pending {
+    background: linear-gradient(135deg, #ffc107, #ffdd57) !important;
+    color: #533f03 !important;
+}
+
+.bg-in-progress {
+    background: linear-gradient(135deg, #17a2b8, #63d1f4) !important;
+    color: #04384b !important;
+}
+
+.bg-resolved {
+    background: linear-gradient(135deg, #28a745, #5dd47e) !important;
+    color: #063d18 !important;
+}
+
+/* Ensure Hover Effect Works */
+.status-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Hover Effect */
+.status-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .search-input, .filter-select {
+            font-size: 14px;
+        }
+
+        .export-btn {
+            font-size: 12px;
+        }
+    }
+</style>
+{% endblock %}

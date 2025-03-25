@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h2 class="text-center">Petitions</h2>
+<div class="container">
+    {% for petition in petitions %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ petition.title }}</h5>
+                <p class="card-text"><strong>Category:</strong> {{ petition.category }}</p>
+                <p class="card-text">{{ petition.description }}</p>
+                <p><strong>Signatures:</strong> {{ petition.signatures }}</p>
+                <a href="{{ url_for('track_petition', petition_id=petition.id) }}" class="btn btn-primary">Track</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
