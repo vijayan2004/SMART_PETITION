@@ -17,7 +17,6 @@ PyYAML==6.0.1
 scikit-learn  
 numpy>=1.21  
 cython>=0.29.36  
-scipy==1.10.1
 joblib==1.2.0
 threadpoolctl==3.1.0
 
