@@ -1,0 +1,12 @@
+Flask==2.2.2
+Flask-SQLAlchemy==2.5.1
+Flask-Login==0.6.2
+Flask-WTF==1.0.1
+Flask-Session==0.4.0
+Werkzeug==2.2.2
+flask-cors==3.1.1
+python-dotenv==0.21.1
+reportlab==3.6.0
+WTForms==3.0.1
+numpy==1.24.2
+pandas==1.5.3
