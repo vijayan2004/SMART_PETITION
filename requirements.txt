@@ -1,15 +1,20 @@
-Flask==2.2.2
-Flask-SQLAlchemy==2.5.1
+Flask==2.2.5
 Flask-Login==0.6.2
-Flask-WTF==1.0.1
+Flask-SQLAlchemy==3.0.5
+Flask-WTF==1.1.1
 Flask-Session==0.4.0
-Werkzeug==2.2.2
-flask-cors
-python-dotenv==0.21.1
-reportlab==3.6.0
-WTForms==3.0.1
-flask>=2.0.1
-numpy>=1.21.0
-pandas>=1.2.0
-flask-cors
-
+Flask-Migrate==4.0.4
+Flask-Cors==3.0.10
+WTForms==3.1.1
+SQLAlchemy==2.0.23
+Werkzeug==2.2.3
+requests==2.31.0
+pandas==2.1.4
+numpy==1.26.3
+scikit-learn==1.3.2
+nltk==3.8.1
+textblob==0.17.1
+gunicorn==21.2.0
+PyYAML==6.0.1
+tensorflow==2.14.0  # If AI models are used
+torch==2.1.2  # If PyTorch models are used
