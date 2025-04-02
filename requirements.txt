@@ -14,7 +14,7 @@ nltk==3.8.1
 textblob==0.17.1
 gunicorn==21.2.0
 PyYAML==6.0.1
-scikit-learn==1.2.2  
+scikit-learn  
 numpy>=1.21  
 cython>=0.29.36  
 scipy==1.10.1
