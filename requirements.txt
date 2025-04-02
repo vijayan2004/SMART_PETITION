@@ -8,5 +8,8 @@ flask-cors
 python-dotenv==0.21.1
 reportlab==3.6.0
 WTForms==3.0.1
-numpy
-pandas
+flask>=2.0.1
+numpy>=1.21.0
+pandas>=1.2.0
+flask-cors
+
